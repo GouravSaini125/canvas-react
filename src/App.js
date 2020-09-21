@@ -22,7 +22,7 @@ function App() {
                 track.stop();
             });
         }
-    }, [stream]);
+    }, []);
 
     const startCapture = mediaRecorder => {
         let recordedChunks = [];
