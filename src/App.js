@@ -42,51 +42,51 @@ function App() {
             const blob = new Blob(recordedChunks, {
                 type: "video/webm"
             });
-            const worker = new Worker(`${process.env.PUBLIC_URL}/ffmpeg-worker-mp4.js`);
-            worker.onmessage = function (e) {
-                const msg = e.data;
-                switch (msg.type) {
-                    case "ready":
-                        blob.arrayBuffer().then(videoBuffer => {
-                            fetch(audio).then(r => r.blob()).then(blob => blob.arrayBuffer()).then(audioBuffer => postMsg(videoBuffer, audioBuffer));
-                        });
-                        break;
-                    case "stdout":
-                        console.log(msg.data);
-                        break;
-                    case "stderr":
-                        console.log(msg.data);
-                        break;
-                    case "done":
-                        setIsConverting(false);
-                        const f = new Blob([msg.data["MEMFS"][0].data], {
-                            type: "video/mp4"
-                        });
-                        const url = URL.createObjectURL(f);
-                        setVideoUrl(url);
-                        break;
-                    default:
-                        return;
-                }
-
-                function postMsg(videoBuffer, audio) {
-                    worker.postMessage({
-                        type: 'run',
-                        MEMFS: [
-                            {name: "video.webm", data: new Uint8Array(videoBuffer)},
-                            {name: "audio.wav", data: new Uint8Array(audio)}
-                        ],
-                        arguments: [
-                            '-i', 'video.webm',
-                            '-i', 'audio.wav',
-                            '-c:v', 'copy',
-                            '-c:a', 'aac',
-                            '-strict', 'experimental',
-                            '-shortest', 'output.mp4'
-                        ],
-                    });
-                }
-            };
+            // const worker = new Worker(`${process.env.PUBLIC_URL}/ffmpeg-worker-mp4.js`);
+            // worker.onmessage = function (e) {
+            //     const msg = e.data;
+            //     switch (msg.type) {
+            //         case "ready":
+            //             blob.arrayBuffer().then(videoBuffer => {
+            //                 fetch(audio).then(r => r.blob()).then(blob => blob.arrayBuffer()).then(audioBuffer => postMsg(videoBuffer, audioBuffer));
+            //             });
+            //             break;
+            //         case "stdout":
+            //             console.log(msg.data);
+            //             break;
+            //         case "stderr":
+            //             console.log(msg.data);
+            //             break;
+            //         case "done":
+            //             setIsConverting(false);
+            //             const f = new Blob([msg.data["MEMFS"][0].data], {
+            //                 type: "video/mp4"
+            //             });
+            //             const url = URL.createObjectURL(f);
+            //             setVideoUrl(url);
+            //             break;
+            //         default:
+            //             return;
+            //     }
+            //
+            //     function postMsg(videoBuffer, audio) {
+            //         worker.postMessage({
+            //             type: 'run',
+            //             MEMFS: [
+            //                 {name: "video.webm", data: new Uint8Array(videoBuffer)},
+            //                 {name: "audio.wav", data: new Uint8Array(audio)}
+            //             ],
+            //             arguments: [
+            //                 '-i', 'video.webm',
+            //                 '-i', 'audio.wav',
+            //                 '-c:v', 'copy',
+            //                 '-c:a', 'aac',
+            //                 '-strict', 'experimental',
+            //                 '-shortest', 'output.mp4'
+            //             ],
+            //         });
+            //     }
+            // };
         }
     }
 
