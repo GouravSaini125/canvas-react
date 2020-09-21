@@ -8,38 +8,6 @@ function Canvas(props) {
     const {direction} = props;
     const canvasRef = useRef(null);
 
-    const getImageOffset = () => {
-        const hRate = 200 / (60 * 5);
-        const vRate = 150 / (60 * 5);
-        switch (direction) {
-            case Directions.DIRECTION_UP:
-                return {
-                    x: 0,
-                    y: -vRate,
-                };
-            case Directions.DIRECTION_DOWN:
-                return {
-                    x: 0,
-                    y: vRate,
-                };
-            case Directions.DIRECTION_LEFT:
-                return {
-                    x: -hRate,
-                    y: 0,
-                };
-            case Directions.DIRECTION_RIGHT:
-                return {
-                    x: hRate,
-                    y: 0,
-                };
-            default:
-                return {
-                    x: 0,
-                    y: 0,
-                };
-        }
-    }
-
     const draw = (ctx, img, currentPosition) => {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.drawImage(img, currentPosition.x, currentPosition.y, img.width / 10, img.height / 10);
@@ -85,10 +53,43 @@ function Canvas(props) {
             render();
         }
 
+
+        const getImageOffset = () => {
+            const hRate = 200 / (60 * 5);
+            const vRate = 150 / (60 * 5);
+            switch (direction) {
+                case Directions.DIRECTION_UP:
+                    return {
+                        x: 0,
+                        y: -vRate,
+                    };
+                case Directions.DIRECTION_DOWN:
+                    return {
+                        x: 0,
+                        y: vRate,
+                    };
+                case Directions.DIRECTION_LEFT:
+                    return {
+                        x: -hRate,
+                        y: 0,
+                    };
+                case Directions.DIRECTION_RIGHT:
+                    return {
+                        x: hRate,
+                        y: 0,
+                    };
+                default:
+                    return {
+                        x: 0,
+                        y: 0,
+                    };
+            }
+        }
+
         return () => {
             window.cancelAnimationFrame(animationFrameId);
         }
-    }, [direction, getImageOffset]);
+    }, [direction]);
 
     return <canvas ref={canvasRef}/>;
 }
