@@ -88,7 +88,7 @@ function Canvas(props) {
         return () => {
             window.cancelAnimationFrame(animationFrameId);
         }
-    }, [direction]);
+    }, [direction, getImageOffset]);
 
     return <canvas ref={canvasRef}/>;
 }
