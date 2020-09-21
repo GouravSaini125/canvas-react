@@ -1,0 +1,6 @@
+export default {
+    DIRECTION_UP: "UP",
+    DIRECTION_DOWN: "DOWN",
+    DIRECTION_LEFT: "LEFT",
+    DIRECTION_RIGHT: "RIGHT",
+};

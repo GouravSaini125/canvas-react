@@ -1,38 +1,94 @@
-.App {
-  text-align: center;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+    background-color: #dee9fd;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+canvas {
+    box-shadow: inset -5px -5px 5px rgba(255, 255, 255, 0.5),
+    inset 5px 5px 5px rgba(163, 177, 198, 0.6),
+    -5px -5px 5px rgba(255, 255, 255, 0.5),
+    5px 5px 5px rgba(163, 177, 198, 0.6);
+    display: block;
+    margin: auto;
+    margin-top: 100px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.controls {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.App-link {
-  color: #61dafb;
+.controls button {
+    height: 50px;
+    width: 100px;
+    margin: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: box-shadow 200ms linear;
+    box-shadow: -5px -5px 5px rgba(255, 255, 255, 0.5),
+    5px 5px 5px rgba(163, 177, 198, 0.6);
+    border: none;
+    background-color: #dee9fd;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.controls button:hover:not(:disabled) {
+    box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.5),
+    2px 2px 5px rgba(163, 177, 198, 0.6);
+}
+
+.download-btn:not(:disabled) {
+    background-color: green;
+    color: white;
+    box-shadow: -5px -5px 5px rgba(255, 255, 255, 0.8),
+    5px 5px 5px rgba(0, 128, 0, 0.5) !important;
+}
+
+.controls button:disabled,
+.controls button[disabled] {
+    box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.5),
+    inset 5px 5px 10px rgba(163, 177, 198, 0.6);
+    cursor: not-allowed;
+}
+
+.loader-wrapper {
+    margin: auto;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: inset -5px -5px 5px rgba(255, 255, 255, 0.5),
+    inset 5px 5px 5px rgba(163, 177, 198, 0.6),
+    -5px -5px 5px rgba(255, 255, 255, 0.5),
+    5px 5px 5px rgba(163, 177, 198, 0.6);
+}
+
+.spinning-loader {
+    width: 25px;
+    height: 25px;
+    border: 5px solid rgba(29, 161, 242, 0.2);
+    border-left-color: rgb(29, 161, 242);
+    border-radius: 50%;
+    background: transparent;
+    animation-name: rotate-s-loader;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    position: relative;
+}
+
+@keyframes rotate-s-loader {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
