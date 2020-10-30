@@ -81,10 +81,11 @@ function App() {
                             '-i', 'audio.wav',
                             '-c:v', 'copy',
                             '-c:a', 'aac',
+                            '-movflags', '+faststart',
                             '-strict', 'experimental',
                             '-pix_fmt', 'yuv420p',
                             '-video_size', '1280x720',
-                            '-b:v', '64k',
+                            '-b:v', '6400k',
                             '-shortest', 'output.mp4'
                         ],
                     });
