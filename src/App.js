@@ -15,7 +15,8 @@ function App() {
     const [isConverting, setIsConverting] = useState(false);
 
     useEffect(() => {
-        setStream(document.querySelector("canvas").captureStream());
+        const strm = document.querySelector("canvas").captureStream();
+        setStream(strm);
 
         return () => {
             stream.getTracks().forEach(function (track) {
@@ -40,57 +41,60 @@ function App() {
         function handleStreamStop() {
             setIsConverting(true);
             const blob = new Blob(recordedChunks, {
-                type: "video/webm"
+                type: "video/mp4"
             });
-            const worker = new Worker(`${process.env.PUBLIC_URL}/ffmpeg-worker-mp4.js`);
-            worker.onmessage = function (e) {
-                const msg = e.data;
-                switch (msg.type) {
-                    case "ready":
-                        blob.arrayBuffer().then(videoBuffer => {
-                            fetch(audio).then(r => r.blob()).then(blob => blob.arrayBuffer()).then(audioBuffer => postMsg(videoBuffer, audioBuffer));
-                        });
-                        break;
-                    case "stdout":
-                        console.log(msg.data);
-                        break;
-                    case "stderr":
-                        console.log(msg.data);
-                        break;
-                    case "done":
-                        setIsConverting(false);
-                        const f = new Blob([msg.data["MEMFS"][0].data], {
-                            type: "video/mp4"
-                        });
-                        const url = URL.createObjectURL(f);
-                        setVideoUrl(url);
-                        break;
-                    default:
-                        return;
-                }
-
-                function postMsg(videoBuffer, audio) {
-                    worker.postMessage({
-                        type: 'run',
-                        MEMFS: [
-                            {name: "video.webm", data: new Uint8Array(videoBuffer)},
-                            {name: "audio.wav", data: new Uint8Array(audio)}
-                        ],
-                        arguments: [
-                            '-i', 'video.webm',
-                            '-i', 'audio.wav',
-                            '-c:v', 'copy',
-                            '-c:a', 'aac',
-                            '-movflags', '+faststart',
-                            '-strict', 'experimental',
-                            '-pix_fmt', 'yuv420p',
-                            '-video_size', '1280x720',
-                            '-b:v', '6400k',
-                            '-shortest', 'output.mp4'
-                        ],
-                    });
-                }
-            };
+            const url = URL.createObjectURL(blob);
+            setVideoUrl(url);
+            setIsConverting(false);
+            // const worker = new Worker(`${process.env.PUBLIC_URL}/ffmpeg-worker-mp4.js`);
+            // worker.onmessage = function (e) {
+            //     const msg = e.data;
+            //     switch (msg.type) {
+            //         case "ready":
+            //             blob.arrayBuffer().then(videoBuffer => {
+            //                 fetch(audio).then(r => r.blob()).then(blob => blob.arrayBuffer()).then(audioBuffer => postMsg(videoBuffer, audioBuffer));
+            //             });
+            //             break;
+            //         case "stdout":
+            //             console.log(msg.data);
+            //             break;
+            //         case "stderr":
+            //             console.log(msg.data);
+            //             break;
+            //         case "done":
+            //             setIsConverting(false);
+            //             const f = new Blob([msg.data["MEMFS"][0].data], {
+            //                 type: "video/mp4"
+            //             });
+            //             const url = URL.createObjectURL(f);
+            //             setVideoUrl(url);
+            //             break;
+            //         default:
+            //             return;
+            //     }
+            //
+            //     function postMsg(videoBuffer, audio) {
+            //         worker.postMessage({
+            //             type: 'run',
+            //             MEMFS: [
+            //                 {name: "video.webm", data: new Uint8Array(videoBuffer)},
+            //                 {name: "audio.wav", data: new Uint8Array(audio)}
+            //             ],
+            //             arguments: [
+            //                 '-i', 'video.webm',
+            //                 '-i', 'audio.wav',
+            //                 '-c:v', 'copy',
+            //                 '-c:a', 'aac',
+            //                 '-movflags', '+faststart',
+            //                 '-strict', 'experimental',
+            //                 '-pix_fmt', 'yuv420p',
+            //                 '-video_size', '1280x720',
+            //                 '-b:v', '6400k',
+            //                 '-shortest', 'output.mp4'
+            //             ],
+            //         });
+            //     }
+            // };
         }
     }
 
@@ -99,7 +103,28 @@ function App() {
         setDirection(dir);
         setVideoUrl(null);
 
-        const options = {mimeType: 'video/webm;codecs=h264'};
+        // const options = {mimeType: 'video/webm;codecs=h264'};
+        var options = {
+            // audioBitsPerSecond : 128000,
+            videoBitsPerSecond: 2500000,
+            mimeType: 'video/webm'
+        }
+        const aud = new Audio(audio);
+        aud.loop = true;
+        aud.crossOrigin = 'anonymous';
+        aud.play();
+
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const stream_dest = ctx.createMediaStreamDestination();
+        const source = ctx.createMediaElementSource(aud);
+        source.connect(stream_dest);
+
+        const str = stream_dest.stream;
+
+        str.getTracks().forEach(track => {
+            stream.addTrack(track);
+            console.log("asdasd", track)
+        });
         const mediaRecorder = new MediaRecorder(stream, options);
 
         startCapture(mediaRecorder);
@@ -107,6 +132,7 @@ function App() {
         const to = setTimeout(function () {
             mediaRecorder.stop();
             setDirection(null);
+            aud.pause();
         }, 5000);
         setPendingTimeout(to);
     }
@@ -167,6 +193,7 @@ function App() {
 
             </div>
 
+            <video src="" id="vid" controls width={300} height={200}/>
 
         </section>
     );
