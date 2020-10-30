@@ -77,15 +77,17 @@ function App() {
                             {name: "audio.wav", data: new Uint8Array(audio)}
                         ],
                         arguments: [
+                            '-fflags', '+genpts',
                             '-i', 'video.webm',
                             '-i', 'audio.wav',
                             '-c:v', 'copy',
                             '-c:a', 'aac',
-                            '-movflags', '+faststart',
-                            '-strict', 'experimental',
-                            '-pix_fmt', 'yuv420p',
-                            '-video_size', '1280x720',
-                            '-b:v', '6400k',
+                            "-r", "24",
+                            // '-movflags', '+faststart',
+                            // '-strict', 'experimental',
+                            // '-pix_fmt', 'yuv420p',
+                            // '-video_size', '1280x720',
+                            // '-b:v', '6400k',
                             '-shortest', 'output.mp4'
                         ],
                     });
