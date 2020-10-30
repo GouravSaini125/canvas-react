@@ -82,6 +82,9 @@ function App() {
                             '-c:v', 'copy',
                             '-c:a', 'aac',
                             '-strict', 'experimental',
+                            '-pix_fmt', 'yuv420p',
+                            '-video_size', '1280x720',
+                            '-b:v', '64k',
                             '-shortest', 'output.mp4'
                         ],
                     });
