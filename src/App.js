@@ -5,6 +5,7 @@ import Button from "./components/Button";
 import Directions from "./configs/Directions";
 
 import audio from "./assets/waves.wav";
+import * as axios from "axios";
 
 function App() {
 
@@ -38,63 +39,26 @@ function App() {
             }
         }
 
-        function handleStreamStop() {
+        async function handleStreamStop() {
             setIsConverting(true);
             const blob = new Blob(recordedChunks, {
-                type: "video/mp4"
+                type: "video/webm"
             });
+
+            console.log(blob)
+            const formData = new FormData();
+            formData.append('file', blob);
+            await axios.post("/api", formData)
+                .then(res => {
+                    console.log(res.data);
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+
             const url = URL.createObjectURL(blob);
             setVideoUrl(url);
             setIsConverting(false);
-            // const worker = new Worker(`${process.env.PUBLIC_URL}/ffmpeg-worker-mp4.js`);
-            // worker.onmessage = function (e) {
-            //     const msg = e.data;
-            //     switch (msg.type) {
-            //         case "ready":
-            //             blob.arrayBuffer().then(videoBuffer => {
-            //                 fetch(audio).then(r => r.blob()).then(blob => blob.arrayBuffer()).then(audioBuffer => postMsg(videoBuffer, audioBuffer));
-            //             });
-            //             break;
-            //         case "stdout":
-            //             console.log(msg.data);
-            //             break;
-            //         case "stderr":
-            //             console.log(msg.data);
-            //             break;
-            //         case "done":
-            //             setIsConverting(false);
-            //             const f = new Blob([msg.data["MEMFS"][0].data], {
-            //                 type: "video/mp4"
-            //             });
-            //             const url = URL.createObjectURL(f);
-            //             setVideoUrl(url);
-            //             break;
-            //         default:
-            //             return;
-            //     }
-            //
-            //     function postMsg(videoBuffer, audio) {
-            //         worker.postMessage({
-            //             type: 'run',
-            //             MEMFS: [
-            //                 {name: "video.webm", data: new Uint8Array(videoBuffer)},
-            //                 {name: "audio.wav", data: new Uint8Array(audio)}
-            //             ],
-            //             arguments: [
-            //                 '-i', 'video.webm',
-            //                 '-i', 'audio.wav',
-            //                 '-c:v', 'copy',
-            //                 '-c:a', 'aac',
-            //                 '-movflags', '+faststart',
-            //                 '-strict', 'experimental',
-            //                 '-pix_fmt', 'yuv420p',
-            //                 '-video_size', '1280x720',
-            //                 '-b:v', '6400k',
-            //                 '-shortest', 'output.mp4'
-            //             ],
-            //         });
-            //     }
-            // };
         }
     }
 
@@ -106,8 +70,8 @@ function App() {
         // const options = {mimeType: 'video/webm;codecs=h264'};
         var options = {
             // audioBitsPerSecond : 128000,
-            videoBitsPerSecond: 2500000,
-            mimeType: 'video/webm'
+            videoBitsPerSecond: 64000000,
+            mimeType: 'video/webm;codecs=h264'
         }
         const aud = new Audio(audio);
         aud.loop = true;
@@ -123,7 +87,6 @@ function App() {
 
         str.getTracks().forEach(track => {
             stream.addTrack(track);
-            console.log("asdasd", track)
         });
         const mediaRecorder = new MediaRecorder(stream, options);
 
@@ -192,8 +155,6 @@ function App() {
                 />
 
             </div>
-
-            <video src="" id="vid" controls width={300} height={200}/>
 
         </section>
     );
